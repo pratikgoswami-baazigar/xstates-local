@@ -9,14 +9,31 @@ const Location = () => {
     
     const fetchCountry = async() => {
 
-       let Countries = await axios.get("https://crio-location-selector.onrender.com/countries");
-       setcountries(Countries.data);
+        try {
+            let response = await axios.get("https://crio-location-selector.onrender.com/countries");
+        
+            // Ensure unique country names
+            const set = new Set();
+            response.data.forEach((country)=>{
+                set.add(country.trim());// because they have spacing differences ( "china", "china ")
+            })
+            const uniqueCountries = [...set]; // Extract values as an array
+        
+            setcountries(uniqueCountries);
+          } catch (error) {
+            console.error(`Error fetching countries: ${error.message || error}`);
+          }
     }
 
     const fetchState = async (countryName) => {
         try{
         let states = await axios.get(`https://crio-location-selector.onrender.com/country=${countryName}/states`);
-        setstates(states.data);
+        const set = new Set();
+        states.data.forEach((state)=>{
+            set.add(state.trim());
+        })
+        const uniqueStates = [...set];
+        setstates(uniqueStates);
         }
         catch(e){
             console.error(`Error fetching data: ${e.message || e}`);
@@ -25,8 +42,13 @@ const Location = () => {
 
     const fetchCity = async (countryName,stateName) => {
         try {
-        let cities = await axios.get(`https://crio-location-selector.onrender.com/country=${countryName}/state=${stateName}/cities`)
-        setcities(cities.data);
+        let cities = await axios.get(`https://crio-location-selector.onrender.com/country=${countryName}/state=${stateName}/cities`);
+        const set = new Set();
+        cities.data.forEach((city)=>{
+            set.add(city.trim());
+        })
+        const uniqueCities = [...set];
+        setcities(uniqueCities);
         }catch(e){
             console.error(`Error fetching data: ${e.message || e}`);
         }
