@@ -8,19 +8,28 @@ const Location = () => {
     const [info,setinfo] = useState({co:"",st:"",ci:""});
     
     const fetchCountry = async() => {
+
        let Countries = await axios.get("https://crio-location-selector.onrender.com/countries");
        setcountries(Countries.data);
     }
 
     const fetchState = async (countryName) => {
+        try{
         let states = await axios.get(`https://crio-location-selector.onrender.com/country=${countryName}/states`);
         setstates(states.data);
+        }
+        catch(e){
+            console.error(`Error fetching data: ${e.message || e}`);
+        }
     }
 
     const fetchCity = async (countryName,stateName) => {
-
+        try {
         let cities = await axios.get(`https://crio-location-selector.onrender.com/country=${countryName}/state=${stateName}/cities`)
         setcities(cities.data);
+        }catch(e){
+            console.error(`Error fetching data: ${e.message || e}`);
+        }
 
     }
     
@@ -71,38 +80,26 @@ const Location = () => {
         <h1>Select Location</h1>
         <select onChange={handleChange}>
         <option>Select Country</option>
-        {countries.map((country, index)=>{
-            return (
-                <>
+        {countries.map((country, index)=>(
                 <option key={index}>{country}</option>
-                </>
-            )
-        })}
+        ))}
         </select>
         <select onChange={handleStateChange} disabled={!info.co}>
             <option >Select State</option>
-            {states.map((state, index)=>{
-                return (
-                    <>
+            {states.map((state, index)=> (
                     <option key={index}>{state}</option>
-                    </>
-                )
-            })}
+                ))}
         </select>
         <select onChange={handleCityChange} disabled={!info.st}>
             <option>Select City</option>
             {
-                cities.map((city,index)=>{
-                    return (
-                        <>
+                cities.map((city,index)=> (
                         <option key={index}>{city}</option>
-                        </>
-                    )
-                })
+                    ))
             }
         </select>
         {info.ci && info.st && info.co &&
-          <h1>You Selected {info.ci}, {info.st}, {info.co}</h1>
+          <h1>You selected {info.ci}, {info.st}, {info.co}</h1>
         }
         </>
     )
